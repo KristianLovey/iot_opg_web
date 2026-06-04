@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body { background: #f6f3ea; color: #16201a; }
+body { font-family: "Inter Tight", system-ui, sans-serif; font-feature-settings: "ss01","cv11"; }
+::selection { background: #2f5f27; color: #f6f3ea; }
+
+.num   { font-variant-numeric: tabular-nums; font-feature-settings: "tnum","ss01","cv11"; }
+.mono  { font-family: "Geist Mono", ui-monospace, monospace; font-feature-settings: "tnum","zero","ss01"; }
+.display { font-family: "Fraunces", serif; font-feature-settings: "ss01"; letter-spacing: -0.02em; }
+.display-num { font-family: "Fraunces", serif; font-feature-settings: "tnum","ss01"; font-variant-numeric: tabular-nums; letter-spacing: -0.025em; }
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(61,122,49,0.05), transparent 40%),
+    radial-gradient(circle at 80% 90%, rgba(201,169,110,0.08), transparent 40%);
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cfd5cd; border-radius: 999px; border: 2px solid #f6f3ea; }
+::-webkit-scrollbar-thumb:hover { background: #a8b3a8; }
+
+.toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: #cfd5cd;
+  border-radius: 999px;
+  transition: background .18s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+  border: none;
+  padding: 0;
+  display: inline-block;
+}
+.toggle.on   { background: #3d7a31; }
+.toggle.auto { background: #d99a2b; }
+.toggle::after {
+  content: "";
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 20px; height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform .18s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+.toggle.on::after,
+.toggle.auto::after { transform: translateX(20px); }
+
+@keyframes pulse-soft { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.live-dot { animation: pulse-soft 1.6s ease-in-out infinite; }
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; }
