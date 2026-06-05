@@ -8,9 +8,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Inter Tight"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['"Space Grotesk"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['"Geist Mono"', 'ui-monospace', 'monospace'],
-        serif: ['"Fraunces"', 'ui-serif', 'serif'],
       },
       colors: {
         ink: {
@@ -22,7 +21,9 @@ module.exports = {
           400: '#7f8e80',
           300: '#a8b3a8',
           200: '#cfd5cd',
+          150: '#dce0da',
           100: '#e8ebe5',
+          50:  '#f3f5f1',
         },
         paper: {
           DEFAULT: '#f6f3ea',

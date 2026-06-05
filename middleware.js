@@ -7,7 +7,7 @@ export function middleware(request) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get('tb_token')?.value;
 
-  const isPublic = pathname.startsWith('/login') || pathname.startsWith('/api/auth');
+  const isPublic = pathname.startsWith('/login') || pathname.startsWith('/api/auth') || pathname.startsWith('/api/tb');
   if (!token && !isPublic) {
     return NextResponse.redirect(new URL('/login', request.url));
   }

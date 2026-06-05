@@ -9,15 +9,16 @@ import {
 import { SparkLine, LineChart } from './charts';
 import { SENSOR_DEFS, ACTUATOR_DEFS } from '@/lib/sensor-defs';
 import { USE_MOCK_DATA } from '@/lib/api';
+import GreenhouseMap from './map';
 
 export { SENSOR_DEFS, ACTUATOR_DEFS };
 
 /* ====================== GREENHOUSE SELECTOR ============================== */
 function GreenhouseSelector({ houses, opgs, devices, latest, selectedId, onSelect }) {
   return (
-    <div className="overflow-x-auto -mx-1 px-1">
-      <div className="flex gap-3 min-w-min pb-1">
-        {houses.map(h => {
+    <div className="overflow-x-auto -mx-1 px-1 pt-1 pb-2">
+      <div className="flex gap-3 min-w-min">
+        {houses.map((h, i) => {
           const opg    = opgs.find(o => o.id === h.opgId);
           const device = devices.find(d => d.id === h.deviceId);
           const v      = latest[h.id];
@@ -26,37 +27,42 @@ function GreenhouseSelector({ houses, opgs, devices, latest, selectedId, onSelec
             <button
               key={h.id}
               onClick={() => onSelect(h.id)}
-              className={`flex-shrink-0 text-left rounded-2xl border transition-all p-4 w-[260px] ${
-                active ? 'bg-ink-900 border-ink-900 text-paper shadow-card' : 'bg-white border-ink-100 hover:border-ink-200 shadow-soft'
-              }`}
+              style={{ animationDelay: `${i * 40}ms` }}
+              className={`flex-shrink-0 text-left rounded-2xl border p-4 w-[260px]
+                transition-all duration-200 ease-out
+                hover:-translate-y-0.5 active:translate-y-0
+                ${active
+                  ? 'bg-ink-900 border-ink-800 text-paper shadow-[0_4px_20px_rgba(22,32,26,0.25)]'
+                  : 'bg-white border-ink-150 hover:border-ink-300 hover:shadow-md shadow-soft'
+                }`}
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Icon.Leaf className={`w-4 h-4 ${active ? 'text-moss-300' : 'text-moss-600'}`} />
-                  <span className={`text-[10px] tracking-[0.18em] uppercase font-medium ${active ? 'text-moss-300' : 'text-moss-700/80'}`}>
+                  <span className={`text-[10px] tracking-[0.18em] uppercase font-medium ${active ? 'text-moss-300' : 'text-moss-700'}`}>
                     {h.type === 'virtualni' ? 'Virtualni' : 'Fizički'}
                   </span>
                 </div>
-                <span className={`w-2 h-2 rounded-full ${device?.online ? 'bg-moss-500 live-dot' : 'bg-ink-300'}`}></span>
+                <span className={`w-2 h-2 rounded-full mt-0.5 ${device?.online ? 'bg-moss-500 live-dot' : 'bg-ink-300'}`}></span>
               </div>
               <div className={`text-[15px] font-semibold leading-tight mb-0.5 ${active ? 'text-paper' : 'text-ink-900'}`}>{h.name}</div>
-              {h.kultura && <div className={`text-[11px] ${active ? 'text-moss-300' : 'text-moss-700'} font-medium`}>{h.kultura}</div>}
-              <div className={`text-[12px] flex items-center gap-1 mt-1 ${active ? 'text-ink-300' : 'text-ink-500'}`}>
-                <Icon.MapPin className="w-3 h-3" />{h.location}
+              {h.kultura && <div className={`text-[11px] font-medium ${active ? 'text-moss-300' : 'text-moss-700'}`}>{h.kultura}</div>}
+              <div className={`text-[12px] flex items-center gap-1 mt-1.5 ${active ? 'text-ink-300' : 'text-ink-600'}`}>
+                <Icon.MapPin className="w-3 h-3 flex-shrink-0" />{h.location}
               </div>
-              <div className={`text-[11px] mt-0.5 ${active ? 'text-ink-300' : 'text-ink-400'}`}>{opg?.name}</div>
+              <div className={`text-[11px] mt-0.5 ${active ? 'text-ink-400' : 'text-ink-500'}`}>{opg?.name}</div>
               <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-dashed"
-                style={{ borderColor: active ? 'rgba(247,243,234,0.15)' : '#e8ebe5' }}>
+                style={{ borderColor: active ? 'rgba(247,243,234,0.12)' : '#dde2d9' }}>
                 <div>
-                  <div className={`text-[10px] uppercase tracking-wider ${active ? 'text-ink-400' : 'text-ink-400'}`}>Temp</div>
-                  <div className={`display-num text-[22px] leading-none font-semibold ${active ? 'text-paper' : 'text-ink-900'}`}>
-                    {v ? `${v.temperature?.toFixed(1)}°` : '–'}
+                  <div className={`text-[10px] uppercase tracking-wider font-medium ${active ? 'text-ink-500' : 'text-ink-500'}`}>Temp</div>
+                  <div className={`display-num text-[22px] leading-none font-semibold mt-0.5 ${active ? 'text-paper' : 'text-ink-900'}`}>
+                    {v ? `${v.temperature?.toFixed(1)}°` : <span className="text-ink-300">–</span>}
                   </div>
                 </div>
                 <div>
-                  <div className={`text-[10px] uppercase tracking-wider ${active ? 'text-ink-400' : 'text-ink-400'}`}>Vlaga</div>
-                  <div className={`display-num text-[22px] leading-none font-semibold ${active ? 'text-paper' : 'text-ink-900'}`}>
-                    {v ? `${v.humidity}%` : '–'}
+                  <div className={`text-[10px] uppercase tracking-wider font-medium ${active ? 'text-ink-500' : 'text-ink-500'}`}>Vlaga</div>
+                  <div className={`display-num text-[22px] leading-none font-semibold mt-0.5 ${active ? 'text-paper' : 'text-ink-900'}`}>
+                    {v ? `${v.humidity}%` : <span className="text-ink-300">–</span>}
                   </div>
                 </div>
               </div>
@@ -75,7 +81,7 @@ function SensorCard({ def, value, history, rule }) {
   const status = evalStatus(value, min, max);
   const IconC  = def.icon;
   return (
-    <Card className="p-5 flex flex-col gap-3">
+    <Card className="p-5 flex flex-col gap-3 animate-fade-in-up hover:shadow-md transition-shadow duration-200">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-xl flex items-center justify-center"
@@ -296,7 +302,7 @@ function EventHistory({ events }) {
 }
 
 /* ====================== DEVICE INFO (real TB mode) ======================= */
-function DeviceInfo({ device, rule }) {
+function DeviceInfo({ device, house, rule }) {
   return (
     <Card className="p-5">
       <SectionTitle kicker="Uređaj" title="ESP32 senzor" />
@@ -331,6 +337,10 @@ function DeviceInfo({ device, rule }) {
           </div>
         </div>
       </div>
+      <div className="mt-4 pt-4 border-t border-ink-100">
+        <div className="text-[11px] font-medium tracking-[0.14em] uppercase text-ink-400 mb-2">Lokacija</div>
+        <GreenhouseMap lat={house?.lat} lng={house?.lng} name={house?.name} />
+      </div>
     </Card>
   );
 }
@@ -345,8 +355,9 @@ export default function UserDashboard({
   const opg         = opgs.find(o => o.id === house?.opgId);
   const device      = devices.find(d => d.id === house?.deviceId);
   const v           = latest[house?.id];
-  const [activeSensor, setActiveSensor] = useState('temperature');
-  const [editOpen, setEditOpen]         = useState(false);
+  const [activeSensor, setActiveSensor]   = useState('temperature');
+  const [editOpen, setEditOpen]           = useState(false);
+  const [selectorOpen, setSelectorOpen]   = useState(true);
   const activeDef   = SENSOR_DEFS.find(s => s.key === activeSensor) || SENSOR_DEFS[0];
   const houseHistory = history[house?.id] || [];
   const houseState  = mockSnapshot[house?.id] || { actuators: {}, autoMode: {} };
@@ -368,14 +379,39 @@ export default function UserDashboard({
   if (!house) return null;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 animate-fade-in">
       {/* Greenhouse selector */}
-      <div>
-        <div className="flex items-center justify-between mb-2.5">
-          <h2 className="text-[11px] tracking-[0.18em] uppercase font-medium text-ink-500">Odabir plastenika</h2>
-          <span className="text-[11px] text-ink-400 num">{houses.length} dostupno</span>
+      <div className="rounded-2xl border border-ink-150 bg-white shadow-soft overflow-hidden">
+        <button
+          onClick={() => setSelectorOpen(o => !o)}
+          className="w-full flex items-center justify-between px-4 py-3 group hover:bg-ink-50/60 transition-colors"
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="w-6 h-6 rounded-lg bg-moss-100 flex items-center justify-center">
+              <Icon.Leaf className="w-3.5 h-3.5 text-moss-700" />
+            </div>
+            <h2 className="text-[12px] tracking-[0.14em] uppercase font-semibold text-ink-600 group-hover:text-ink-900 transition-colors">
+              Odabir plastenika
+            </h2>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] text-ink-400 num bg-ink-100 px-2 py-0.5 rounded-full">{houses.length} dostupno</span>
+            <div className={`w-5 h-5 rounded-md bg-ink-100 group-hover:bg-ink-200 flex items-center justify-center transition-all duration-200 ${selectorOpen ? '' : 'rotate-180'}`}>
+              <Icon.Chevron className="w-3 h-3 text-ink-500" />
+            </div>
+          </div>
+        </button>
+        <div className={`grid transition-all duration-300 ease-in-out ${selectorOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+          <div className="overflow-hidden">
+            <div className="px-4 pb-3 pt-1 border-t border-ink-100">
+              <GreenhouseSelector
+                houses={houses} opgs={opgs} devices={devices} latest={latest}
+                selectedId={house.id} onSelect={setSelectedHouseId}
+                open={true}
+              />
+            </div>
+          </div>
         </div>
-        <GreenhouseSelector houses={houses} opgs={opgs} devices={devices} latest={latest} selectedId={house.id} onSelect={setSelectedHouseId} />
       </div>
 
       {/* Greenhouse header */}
@@ -412,7 +448,7 @@ export default function UserDashboard({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Left: sensors + chart */}
         <div className="lg:col-span-8 space-y-5">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 stagger">
             {SENSOR_DEFS.map(s => (
               <SensorCard key={s.key} def={s} value={v?.[s.key]} history={houseHistory} rule={rule} />
             ))}
@@ -467,7 +503,7 @@ export default function UserDashboard({
               latestValues={v} onManual={onActuatorToggle} onAuto={onAutoToggle}
             />
           ) : (
-            <DeviceInfo device={device} rule={rule} />
+            <DeviceInfo device={device} house={house} rule={rule} />
           )}
           <EventHistory events={houseEvents} />
         </div>

@@ -57,48 +57,48 @@ function HousesTab({ houses, setHouses, opgs, devices, setDevices }) {
       <Card className="overflow-hidden">
         <table className="w-full text-[13px]">
           <thead>
-            <tr className="border-b border-ink-100 bg-paper-soft/50">
+            <tr className="border-b border-ink-200 bg-ink-50">
               {['Plastenik','OPG','Lokacija','Tip','Površina','Uređaj',''].map((h, i) => (
-                <th key={i} className="text-left font-medium text-ink-500 text-[11px] uppercase tracking-wider px-5 py-3">{h}</th>
+                <th key={i} className="text-left font-semibold text-ink-600 text-[11px] uppercase tracking-wider px-5 py-3.5">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {houses.map(h => {
+            {houses.map((h, idx) => {
               const opg = opgs.find(o => o.id === h.opgId);
               const dev = devices.find(d => d.id === h.deviceId);
               return (
-                <tr key={h.id} className="border-b border-ink-100 last:border-0 hover:bg-paper-soft/40">
-                  <td className="px-5 py-3.5">
-                    <div className="font-medium text-ink-900">{h.name}</div>
-                    <div className="text-[11px] text-ink-400 mono">{h.id}</div>
+                <tr key={h.id} className={`border-b border-ink-100 last:border-0 hover:bg-moss-50/40 transition-colors ${idx % 2 === 0 ? '' : 'bg-paper-soft/30'}`}>
+                  <td className="px-5 py-4">
+                    <div className="font-semibold text-ink-900">{h.name}</div>
+                    <div className="text-[11px] text-ink-400 mono mt-0.5">{h.id.slice(0, 12)}…</div>
                   </td>
-                  <td className="px-5 py-3.5">
-                    <div className="text-ink-800">{opg?.name}</div>
-                    <div className="text-[11px] text-ink-400">{opg?.owner}</div>
+                  <td className="px-5 py-4">
+                    <div className="font-medium text-ink-800">{opg?.name}</div>
+                    <div className="text-[11px] text-ink-500 mt-0.5">{opg?.owner}</div>
                   </td>
-                  <td className="px-5 py-3.5 text-ink-700">{h.location}</td>
-                  <td className="px-5 py-3.5">
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium ${
-                      h.type === 'fizički' ? 'bg-moss-100 text-moss-800' : 'bg-sky/15 text-sky-dark'
+                  <td className="px-5 py-4 text-ink-700">{h.location}</td>
+                  <td className="px-5 py-4">
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold ${
+                      h.type === 'fizički' ? 'bg-moss-100 text-moss-800 border border-moss-200' : 'bg-sky/15 text-sky-dark border border-sky/20'
                     }`}>
                       {h.type === 'fizički' ? <Icon.Cpu className="w-3 h-3" /> : <Icon.Activity className="w-3 h-3" />}
                       {h.type}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5 num text-ink-700">{h.area} m²</td>
-                  <td className="px-5 py-3.5">
-                    <div className="flex items-center gap-1.5">
-                      <span className={`w-1.5 h-1.5 rounded-full ${dev?.online ? 'bg-moss-500' : 'bg-ink-300'}`}></span>
-                      <span className="mono text-[12px] text-ink-700">{h.deviceId}</span>
+                  <td className="px-5 py-4 num font-medium text-ink-800">{h.area} m²</td>
+                  <td className="px-5 py-4">
+                    <div className="flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dev?.online ? 'bg-moss-500' : 'bg-ink-300'}`}></span>
+                      <span className="mono text-[12px] text-ink-600 truncate max-w-[140px]">{h.deviceId}</span>
                     </div>
                   </td>
-                  <td className="px-5 py-3.5">
+                  <td className="px-5 py-4">
                     <div className="flex items-center gap-1">
-                      <button onClick={() => setEditing(h)} className="p-1.5 text-ink-400 hover:text-ink-800 hover:bg-ink-100 rounded">
+                      <button onClick={() => setEditing(h)} className="p-1.5 text-ink-400 hover:text-ink-900 hover:bg-ink-100 rounded-lg transition-colors">
                         <Icon.Pencil className="w-3.5 h-3.5" />
                       </button>
-                      <button onClick={() => setConfirmDel(h)} className="p-1.5 text-ink-400 hover:text-clay hover:bg-clay/10 rounded">
+                      <button onClick={() => setConfirmDel(h)} className="p-1.5 text-ink-400 hover:text-clay hover:bg-clay/10 rounded-lg transition-colors">
                         <Icon.Trash className="w-3.5 h-3.5" />
                       </button>
                     </div>
@@ -194,41 +194,41 @@ function DevicesTab({ devices, setDevices, houses }) {
           </Button>
         }
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 stagger">
         {devices.map(d => {
           const house = houses.find(h => h.id === d.houseId);
           return (
-            <Card key={d.id} className="p-5">
+            <Card key={d.id} className={`p-5 border animate-fade-in-up hover:shadow-md transition-shadow duration-200 ${d.online ? 'border-ink-150' : 'border-ink-100 opacity-80'}`}>
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                    d.type === 'ESP' ? 'bg-ink-900 text-paper' : 'bg-sky/15 text-sky-dark'
+                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center shadow-sm ${
+                    d.type === 'ESP' ? 'bg-ink-900 text-paper' : 'bg-sky/20 text-sky-dark border border-sky/30'
                   }`}>
                     {d.type === 'ESP' ? <Icon.Cpu className="w-5 h-5" /> : <Icon.Activity className="w-5 h-5" />}
                   </div>
                   <div>
                     <div className="font-semibold text-ink-900 text-[14px]">{d.name}</div>
-                    <div className="text-[11px] text-ink-400 mono">{d.id}</div>
+                    <div className="text-[11px] text-ink-400 mono mt-0.5">{d.id}</div>
                   </div>
                 </div>
-                <Badge status={d.online ? 'on' : 'off'} />
+                <Badge status={d.online ? 'on' : 'off'}>{d.online ? 'Online' : 'Offline'}</Badge>
               </div>
-              <div className="grid grid-cols-2 gap-3 pt-3 border-t border-ink-100">
-                <div>
-                  <div className="text-[10px] uppercase tracking-wider text-ink-400">Tip</div>
-                  <div className="text-[12px] text-ink-800 font-medium">{d.type}</div>
+              <div className="grid grid-cols-2 gap-3 pt-3 border-t border-ink-150">
+                <div className="bg-paper-soft/60 rounded-lg px-3 py-2">
+                  <div className="text-[10px] uppercase tracking-wider font-medium text-ink-500">Tip</div>
+                  <div className="text-[12px] text-ink-900 font-semibold mt-0.5">{d.type}</div>
                 </div>
-                <div>
-                  <div className="text-[10px] uppercase tracking-wider text-ink-400">Firmware</div>
-                  <div className="mono text-[12px] text-ink-800">{d.firmware}</div>
+                <div className="bg-paper-soft/60 rounded-lg px-3 py-2">
+                  <div className="text-[10px] uppercase tracking-wider font-medium text-ink-500">Firmware</div>
+                  <div className="mono text-[12px] text-ink-900 mt-0.5">{d.firmware}</div>
                 </div>
-                <div>
-                  <div className="text-[10px] uppercase tracking-wider text-ink-400">Plastenik</div>
-                  <div className="text-[12px] text-ink-800 truncate">{house?.name || '–'}</div>
+                <div className="bg-paper-soft/60 rounded-lg px-3 py-2">
+                  <div className="text-[10px] uppercase tracking-wider font-medium text-ink-500">Plastenik</div>
+                  <div className="text-[12px] text-ink-900 font-medium truncate mt-0.5">{house?.name || '–'}</div>
                 </div>
-                <div>
-                  <div className="text-[10px] uppercase tracking-wider text-ink-400">Zadnje</div>
-                  <div className="text-[12px] text-ink-800">{fmtAgo(d.lastSeen)}</div>
+                <div className="bg-paper-soft/60 rounded-lg px-3 py-2">
+                  <div className="text-[10px] uppercase tracking-wider font-medium text-ink-500">Zadnje</div>
+                  <div className="text-[12px] text-ink-900 mt-0.5">{fmtAgo(d.lastSeen)}</div>
                 </div>
               </div>
               <div className="flex items-center gap-1 mt-3 pt-3 border-t border-ink-100">
@@ -495,18 +495,34 @@ export default function AdminPanel(props) {
   const [tab, setTab] = useState('houses');
   return (
     <div className="space-y-5">
-      <div>
-        <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-moss-700/80 font-medium mb-1">
-          <Icon.Shield className="w-3.5 h-3.5" /> Administratorsko sučelje
+      <div className="relative rounded-2xl overflow-hidden mb-2">
+        <div className="bg-green-grad px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-moss-200 font-semibold mb-2">
+              <Icon.Shield className="w-3.5 h-3.5" />
+              Administratorsko sučelje
+            </div>
+            <h1 className="display text-3xl md:text-4xl text-white leading-none">Konfiguracija sustava</h1>
+            <p className="text-[13px] text-moss-200 mt-1.5">
+              Upravljaj OPG-ovima, uređajima i pravilima.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 px-3 py-2 bg-white/15 border border-white/20 rounded-xl text-[12px] text-white backdrop-blur-sm flex-shrink-0">
+            <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center text-[11px] font-bold">LD</div>
+            <div>
+              <div className="font-semibold">luka.dizdar@fer.hr</div>
+              <div className="text-[10px] text-moss-200">Tenant Administrator</div>
+            </div>
+          </div>
         </div>
-        <h1 className="display text-3xl md:text-4xl text-ink-900 leading-none">Konfiguracija sustava</h1>
-        <p className="text-[13px] text-ink-500 mt-1.5">
-          Upravljaj OPG-ovima, uređajima i pravilima. Sve promjene odmah se odražavaju u korisničkom prikazu.
-        </p>
+        {/* subtle mesh overlay */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          backgroundImage: 'radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 60%), radial-gradient(circle at 10% 80%, rgba(0,0,0,0.08) 0%, transparent 50%)'
+        }} />
       </div>
 
-      <div className="border-b border-ink-100 -mt-1">
-        <div className="flex gap-1 overflow-x-auto">
+      <div className="border-b border-ink-200 bg-white/60 -mt-1">
+        <div className="flex gap-0.5 overflow-x-auto">
           {ADMIN_TABS.map(t => {
             const IconC = t.icon;
             const active = tab === t.id;
@@ -514,19 +530,22 @@ export default function AdminPanel(props) {
               <button
                 key={t.id}
                 onClick={() => setTab(t.id)}
-                className={`flex items-center gap-2 px-4 py-3 text-[13px] font-medium border-b-2 transition-colors -mb-px ${
-                  active ? 'border-ink-900 text-ink-900' : 'border-transparent text-ink-500 hover:text-ink-800'
+                className={`flex items-center gap-2 px-4 py-3.5 text-[13px] font-semibold border-b-2 transition-all duration-150 -mb-px whitespace-nowrap ${
+                  active
+                    ? 'border-moss-600 text-moss-700 bg-moss-50/70'
+                    : 'border-transparent text-ink-500 hover:text-ink-800 hover:bg-ink-50'
                 }`}
               >
-                <IconC className="w-4 h-4" />
+                <IconC className={`w-4 h-4 ${active ? 'text-moss-600' : ''}`} />
                 {t.label}
+                {active && <span className="text-[10px] text-moss-500 hidden sm:inline opacity-80">{t.sub}</span>}
               </button>
             );
           })}
         </div>
       </div>
 
-      <div>
+      <div className="animate-fade-in-up">
         {tab === 'houses'   && <HousesTab {...props} />}
         {tab === 'devices'  && <DevicesTab {...props} />}
         {tab === 'rules'    && <RulesTab houses={props.houses} rules={props.rules} setRules={props.setRules} onSaveRules={props.onSaveRules} />}

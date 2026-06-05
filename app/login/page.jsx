@@ -10,6 +10,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError]       = useState('');
   const [loading, setLoading]   = useState(false);
+  const [showPwd, setShowPwd]   = useState(false);
 
   const submit = async (e) => {
     e.preventDefault();
@@ -78,14 +79,25 @@ export default function LoginPage() {
             </div>
             <div className="flex flex-col gap-1.5">
               <span className="text-[12px] font-medium text-ink-600">Lozinka</span>
-              <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-                placeholder="••••••••"
-                className="w-full px-3 py-2 text-[13px] bg-paper-soft border border-ink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-moss-500 placeholder:text-ink-300"
-              />
+              <div className="relative">
+                <input
+                  type={showPwd ? 'text' : 'password'}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                  placeholder="••••••••"
+                  className="w-full px-3 py-2 pr-9 text-[13px] bg-paper-soft border border-ink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-moss-400 focus:border-moss-500 placeholder:text-ink-300"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPwd(v => !v)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-ink-400 hover:text-ink-700 transition-colors"
+                  tabIndex={-1}
+                  aria-label={showPwd ? 'Sakrij lozinku' : 'Prikaži lozinku'}
+                >
+                  {showPwd ? <Icon.EyeOff className="w-4 h-4" /> : <Icon.Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
             <button
               type="submit"

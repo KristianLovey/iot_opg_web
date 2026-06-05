@@ -32,6 +32,7 @@ export default function AppMain() {
   const [mockSnapshot, setMockSnapshot] = useState({});
   const [events, setEvents]             = useState([]);
   const [tbLoading, setTbLoading]       = useState(!USE_MOCK_DATA);
+  const [userEmail, setUserEmail]       = useState('');
   const prevBreachRef = useRef({});
 
   // ── Real TB: initial data load ──────────────────────────────────────────
@@ -44,6 +45,7 @@ export default function AppMain() {
         setDevices(data.devices);
         setRules(data.rules);
         setOpgs(data.opgs);
+        setUserEmail(data.userEmail || '');
         if (data.houses.length > 0) setSelectedHouseId(data.houses[0].id);
       })
       .catch(err => {
@@ -64,7 +66,9 @@ export default function AppMain() {
           const hist = await getTelemetryHistory(h.deviceId);
           const tsMap = {};
           TELEM_KEYS.forEach(k => {
-            (hist[k] || []).forEach(({ ts, value }) => {
+            // normalise illuminance/light → lux
+            const rows = hist[k] || (k === 'lux' ? (hist.illuminance || hist.light || []) : []);
+            rows.forEach(({ ts, value }) => {
               tsMap[ts] = tsMap[ts] || { ts };
               tsMap[ts][k] = parseFloat(value);
             });
@@ -154,8 +158,12 @@ export default function AppMain() {
         if (!h.deviceId) continue;
         try {
           const lat = await getLatestTelemetry(h.deviceId);
-          nextLatest[h.id] = { temperature: parseFloat(lat.temperature?.[0]?.value), humidity: parseFloat(lat.humidity?.[0]?.value), lux: parseFloat(lat.lux?.[0]?.value) };
-        } catch (e) { console.warn('TB poll failed', h.id, e); }
+          const luxRaw = lat.lux?.[0]?.value ?? lat.illuminance?.[0]?.value ?? lat.light?.[0]?.value;
+          nextLatest[h.id] = { temperature: parseFloat(lat.temperature?.[0]?.value), humidity: parseFloat(lat.humidity?.[0]?.value), lux: parseFloat(luxRaw) };
+        } catch (e) {
+          if (e.message.includes('401')) { router.push('/login'); return; }
+          console.warn('TB poll failed', h.id, e);
+        }
       }
       if (cancelled) return;
       setLatest(nextLatest);
@@ -214,6 +222,7 @@ export default function AppMain() {
     router.push('/login');
   }, [router]);
 
+  const isAdmin = userEmail === 'luka.dizdar@fer.hr';
   const opg = opgs.find(o => o.id === houses.find(h => h.id === selectedHouseId)?.opgId);
   const allLatest = Object.values(latest);
 
@@ -243,30 +252,36 @@ export default function AppMain() {
   return (
     <div className="min-h-screen">
       {/* TOP NAV */}
-      <header className="sticky top-0 z-30 bg-paper/85 backdrop-blur border-b border-ink-100">
+      <header className="sticky top-0 z-30 bg-paper/90 backdrop-blur-md border-b border-ink-100/80 shadow-[0_1px_0_rgba(22,32,26,0.04)]">
         <div className="max-w-[1440px] mx-auto px-4 md:px-6 h-[64px] flex items-center gap-4">
+          {/* Logo */}
           <div className="flex items-center gap-2.5 flex-shrink-0">
-            <div className="w-9 h-9 rounded-xl bg-ink-900 text-paper flex items-center justify-center relative overflow-hidden">
-              <Icon.Leaf className="w-5 h-5 text-moss-300 relative z-10" />
-              <div className="absolute inset-0 bg-gradient-to-br from-moss-700/30 to-transparent"></div>
+            <div className="w-9 h-9 rounded-xl bg-green-grad text-paper flex items-center justify-center relative overflow-hidden shadow-sm">
+              <Icon.Leaf className="w-[18px] h-[18px] text-white relative z-10" />
             </div>
             <div>
-              <div className="display text-[16px] leading-none text-ink-900 font-semibold">Plastenik<span className="text-moss-700">.io</span></div>
-              <div className="text-[10px] text-ink-400 tracking-wider uppercase mt-0.5">Pametni IoT nadzor</div>
+              <div className="display text-[17px] leading-none text-ink-900">
+                Plastenik<span className="text-moss-600">.io</span>
+              </div>
+              <div className="text-[9px] text-ink-400 tracking-[0.18em] uppercase mt-0.5 font-medium">Pametni IoT nadzor</div>
             </div>
           </div>
 
-          <div className="ml-4 md:ml-8 flex p-1 bg-ink-100 rounded-lg">
-            <ViewTab active={view === 'user'}  onClick={() => setView('user')}>
+          {/* Nav tabs */}
+          <div className="ml-4 md:ml-8 flex p-1 bg-ink-100/80 rounded-xl border border-ink-150/60">
+            <ViewTab active={view === 'user'} onClick={() => setView('user')}>
               <Icon.Dashboard className="w-4 h-4" /> Korisnik
             </ViewTab>
-            <ViewTab active={view === 'admin'} onClick={() => setView('admin')}>
-              <Icon.Shield className="w-4 h-4" /> Administrator
-            </ViewTab>
+            {isAdmin && (
+              <ViewTab active={view === 'admin'} onClick={() => setView('admin')}>
+                <Icon.Shield className="w-4 h-4" /> Administrator
+              </ViewTab>
+            )}
           </div>
 
           <div className="flex-1" />
 
+          {/* Status badges */}
           <div className="hidden md:flex items-center gap-2">
             <Badge status={USE_MOCK_DATA ? 'warn' : 'on'}>
               {USE_MOCK_DATA ? 'Demo mod' : 'ThingsBoard'}
@@ -278,24 +293,13 @@ export default function AppMain() {
             )}
           </div>
 
-          <div className="hidden lg:flex items-center gap-2 pl-3 ml-1 border-l border-ink-100">
-            <div className="w-8 h-8 rounded-full bg-moss-100 text-moss-700 flex items-center justify-center text-[12px] font-semibold">
-              {(opg?.owner || 'OPG').split(' ').map(w => w[0]).slice(0, 2).join('')}
-            </div>
-            <div className="text-[12px] leading-tight">
-              <div className="font-medium text-ink-900">{opg?.owner}</div>
-              <div className="text-ink-400">{opg?.name}</div>
-            </div>
-            {!USE_MOCK_DATA && (
-              <button
-                onClick={handleLogout}
-                className="ml-2 p-1.5 text-ink-400 hover:text-clay hover:bg-clay/10 rounded-lg"
-                title="Odjava"
-              >
-                <Icon.Power className="w-4 h-4" />
-              </button>
-            )}
-          </div>
+          {/* Profile dropdown */}
+          <ProfileMenu
+            email={userEmail || opg?.owner || ''}
+            opgName={opg?.name || 'OPG'}
+            isAdmin={isAdmin}
+            onLogout={USE_MOCK_DATA ? null : handleLogout}
+          />
         </div>
       </header>
 
@@ -308,6 +312,11 @@ export default function AppMain() {
             <Icon.Building className="w-10 h-10 mb-3 text-ink-300" />
             <div className="text-[14px] font-medium text-ink-700">Nema plastenika</div>
             <div className="text-[13px] mt-0.5">Korisnički račun nema pripisanih plastenika u ThingsBoardu.</div>
+          </div>
+        ) : view === 'admin' && !isAdmin ? (
+          <div className="flex flex-col items-center justify-center py-20 text-ink-500">
+            <Icon.Shield className="w-10 h-10 mb-3 text-ink-300" />
+            <div className="text-[14px] font-medium text-ink-700">Pristup zabranjen</div>
           </div>
         ) : view === 'user' ? (
           <UserDashboard
@@ -353,8 +362,10 @@ function ViewTab({ active, onClick, children }) {
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-medium rounded-md transition-colors ${
-        active ? 'bg-white text-ink-900 shadow-soft' : 'text-ink-500 hover:text-ink-800'
+      className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[13px] font-semibold rounded-lg transition-all duration-150 ${
+        active
+          ? 'bg-white text-ink-900 shadow-soft border border-ink-150/60'
+          : 'text-ink-500 hover:text-ink-800 hover:bg-white/60'
       }`}
     >
       {children}
@@ -362,13 +373,87 @@ function ViewTab({ active, onClick, children }) {
   );
 }
 
+function ProfileMenu({ email, opgName, isAdmin, onLogout }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const initials = email
+    ? email.split('@')[0].split(/[._-]/).map(p => p[0]).slice(0, 2).join('').toUpperCase()
+    : 'U';
+
+  return (
+    <div className="relative flex-shrink-0" ref={ref}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        className={`flex items-center gap-2.5 pl-3 pr-2 py-1.5 rounded-xl border transition-all duration-150 ${
+          open
+            ? 'bg-white border-ink-200 shadow-soft'
+            : 'border-transparent hover:bg-white hover:border-ink-150 hover:shadow-soft'
+        }`}
+      >
+        <div className="w-7 h-7 rounded-lg bg-green-grad text-white flex items-center justify-center text-[11px] font-bold tracking-wide shadow-sm">
+          {initials}
+        </div>
+        <div className="hidden sm:block text-left">
+          <div className="text-[12px] font-semibold text-ink-900 leading-tight max-w-[140px] truncate">{email}</div>
+          <div className="text-[10px] text-ink-400 leading-tight">{isAdmin ? 'Tenant Administrator' : opgName}</div>
+        </div>
+        <Icon.Chevron className={`w-3.5 h-3.5 text-ink-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {open && (
+        <div className="absolute right-0 top-full mt-2 w-[220px] bg-white rounded-2xl border border-ink-150 shadow-[0_8px_32px_rgba(22,32,26,0.12)] overflow-hidden animate-slide-down z-50">
+          {/* User info header */}
+          <div className="bg-green-grad-soft border-b border-moss-200/60 px-4 py-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-green-grad text-white flex items-center justify-center text-[13px] font-bold shadow-sm">
+                {initials}
+              </div>
+              <div className="min-w-0">
+                <div className="text-[12px] font-semibold text-ink-900 truncate">{email}</div>
+                <div className="text-[11px] text-moss-700 font-medium">{isAdmin ? 'Administrator' : opgName}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Menu items */}
+          <div className="p-1.5">
+            <div className="px-3 py-2 flex items-center gap-2 text-[12px] text-ink-500">
+              <Icon.Shield className="w-3.5 h-3.5 text-moss-600" />
+              <span>{isAdmin ? 'Tenant Admin pristup' : 'Korisnički pristup'}</span>
+            </div>
+            <div className="h-px bg-ink-100 my-1" />
+            {onLogout ? (
+              <button
+                onClick={() => { setOpen(false); onLogout(); }}
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-medium text-clay hover:bg-clay/10 rounded-xl transition-colors"
+              >
+                <Icon.Power className="w-4 h-4" />
+                Odjava
+              </button>
+            ) : (
+              <div className="px-3 py-2 text-[12px] text-ink-400 italic">Demo mod – odjava nije dostupna</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function BootSkeleton() {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-ink-400">
-      <div className="w-12 h-12 rounded-2xl bg-moss-100 text-moss-700 flex items-center justify-center mb-3 animate-pulse">
+      <div className="w-12 h-12 rounded-2xl bg-green-grad text-white flex items-center justify-center mb-3 animate-pulse">
         <Icon.Leaf className="w-6 h-6" />
       </div>
-      <div className="text-[13px] num">Učitavam telemetriju…</div>
+      <div className="text-[13px] font-medium text-ink-500">Učitavam telemetriju…</div>
     </div>
   );
 }

@@ -1,15 +1,16 @@
+@import 'leaflet/dist/leaflet.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 html, body { background: #f6f3ea; color: #16201a; }
-body { font-family: "Inter Tight", system-ui, sans-serif; font-feature-settings: "ss01","cv11"; }
+body { font-family: "Space Grotesk", system-ui, sans-serif; font-feature-settings: "ss01","cv11"; }
 ::selection { background: #2f5f27; color: #f6f3ea; }
 
-.num   { font-variant-numeric: tabular-nums; font-feature-settings: "tnum","ss01","cv11"; }
+.num   { font-variant-numeric: tabular-nums; font-feature-settings: "tnum","ss01"; }
 .mono  { font-family: "Geist Mono", ui-monospace, monospace; font-feature-settings: "tnum","zero","ss01"; }
-.display { font-family: "Fraunces", serif; font-feature-settings: "ss01"; letter-spacing: -0.02em; }
-.display-num { font-family: "Fraunces", serif; font-feature-settings: "tnum","ss01"; font-variant-numeric: tabular-nums; letter-spacing: -0.025em; }
+.display { font-family: "Space Grotesk", sans-serif; font-weight: 700; letter-spacing: -0.03em; }
+.display-num { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.04em; }
 
 body::before {
   content: "";
@@ -18,8 +19,9 @@ body::before {
   pointer-events: none;
   z-index: 0;
   background-image:
-    radial-gradient(circle at 20% 10%, rgba(61,122,49,0.05), transparent 40%),
-    radial-gradient(circle at 80% 90%, rgba(201,169,110,0.08), transparent 40%);
+    radial-gradient(circle at 15% 5%, rgba(61,122,49,0.08), transparent 45%),
+    radial-gradient(circle at 85% 95%, rgba(47,95,39,0.06), transparent 40%),
+    radial-gradient(circle at 80% 20%, rgba(201,169,110,0.05), transparent 35%);
 }
 
 ::-webkit-scrollbar { width: 10px; height: 10px; }
@@ -27,17 +29,16 @@ body::before {
 ::-webkit-scrollbar-thumb { background: #cfd5cd; border-radius: 999px; border: 2px solid #f6f3ea; }
 ::-webkit-scrollbar-thumb:hover { background: #a8b3a8; }
 
+/* ── Toggle ─────────────────────────────────────── */
 .toggle {
   position: relative;
-  width: 44px;
-  height: 24px;
+  width: 44px; height: 24px;
   background: #cfd5cd;
   border-radius: 999px;
   transition: background .18s ease;
   cursor: pointer;
   flex-shrink: 0;
-  border: none;
-  padding: 0;
+  border: none; padding: 0;
   display: inline-block;
 }
 .toggle.on   { background: #3d7a31; }
@@ -55,9 +56,52 @@ body::before {
 .toggle.on::after,
 .toggle.auto::after { transform: translateX(20px); }
 
+/* ── Animations ─────────────────────────────────── */
 @keyframes pulse-soft { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
 .live-dot { animation: pulse-soft 1.6s ease-in-out infinite; }
 
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-6px) scaleY(0.96); }
+  to   { opacity: 1; transform: translateY(0)   scaleY(1); }
+}
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.animate-fade-in-up  { animation: fade-in-up  0.35s cubic-bezier(.22,.68,0,1.2) both; }
+.animate-fade-in     { animation: fade-in     0.25s ease both; }
+.animate-slide-down  { animation: slide-down  0.22s cubic-bezier(.22,.68,0,1.1) both; }
+.animate-slide-in-right { animation: slide-in-right 0.3s cubic-bezier(.22,.68,0,1.2) both; }
+
+/* stagger helpers */
+.stagger > *:nth-child(1) { animation-delay:  0ms; }
+.stagger > *:nth-child(2) { animation-delay: 50ms; }
+.stagger > *:nth-child(3) { animation-delay:100ms; }
+.stagger > *:nth-child(4) { animation-delay:150ms; }
+.stagger > *:nth-child(5) { animation-delay:200ms; }
+.stagger > *:nth-child(6) { animation-delay:250ms; }
+
+/* ── Green gradient utilities ────────────────────── */
+.bg-green-grad {
+  background: linear-gradient(135deg, #2f5f27 0%, #3d7a31 60%, #56994a 100%);
+}
+.bg-green-grad-soft {
+  background: linear-gradient(135deg, rgba(61,122,49,0.12) 0%, rgba(86,153,74,0.06) 100%);
+}
+.border-green-grad {
+  border-image: linear-gradient(135deg, #3d7a31, #56994a) 1;
+}
+
+/* ── Input ───────────────────────────────────────── */
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 input[type=number] { -moz-appearance: textfield; }
