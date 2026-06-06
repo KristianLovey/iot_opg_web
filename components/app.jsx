@@ -49,8 +49,8 @@ export default function AppMain() {
         if (data.houses.length > 0) setSelectedHouseId(data.houses[0].id);
       })
       .catch(err => {
+        if (err.message === 'Not authenticated') { router.push('/login'); return; }
         console.error('TB data load failed', err);
-        if (err.message === 'Not authenticated') router.push('/login');
       })
       .finally(() => setTbLoading(false));
   }, []);
