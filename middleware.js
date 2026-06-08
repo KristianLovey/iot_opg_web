@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 
 export function middleware(request) {
-  // Mock mode: no auth required
   if (process.env.NEXT_PUBLIC_USE_MOCK !== 'false') return NextResponse.next();
 
   const { pathname } = request.nextUrl;

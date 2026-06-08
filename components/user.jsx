@@ -13,7 +13,6 @@ import GreenhouseMap from './map';
 
 export { SENSOR_DEFS, ACTUATOR_DEFS };
 
-/* ====================== GREENHOUSE SELECTOR ============================== */
 function GreenhouseSelector({ houses, opgs, devices, latest, selectedId, onSelect }) {
   return (
     <div className="overflow-x-auto -mx-1 px-1 pt-1 pb-2">
@@ -74,7 +73,6 @@ function GreenhouseSelector({ houses, opgs, devices, latest, selectedId, onSelec
   );
 }
 
-/* ====================== SENSOR CARD ====================================== */
 function SensorCard({ def, value, history, rule }) {
   const min    = def.min ? rule[def.min] : null;
   const max    = def.max ? rule[def.max] : null;
@@ -110,7 +108,6 @@ function SensorCard({ def, value, history, rule }) {
   );
 }
 
-/* ====================== ACTUATOR PANEL (mock only) ======================= */
 function ActuatorPanel({ houseId, state, rule, latestValues, onManual, onAuto }) {
   return (
     <Card className="p-5">
@@ -156,11 +153,9 @@ function ActuatorPanel({ houseId, state, rule, latestValues, onManual, onAuto })
   );
 }
 
-/* ====================== GREENHOUSE EDIT MODAL ============================ */
 function HouseEditModal({ open, house, rule, onClose, onSave }) {
   const [form, setForm] = useState(null);
 
-  // Reset form when modal opens
   if (open && !form) {
     setForm({
       kultura:  house.kultura  || '',
@@ -235,7 +230,6 @@ function HouseEditModal({ open, house, rule, onClose, onSave }) {
   );
 }
 
-/* ====================== ALERTS BANNER ==================================== */
 function AlertsBanner({ alerts }) {
   if (!alerts.length) return null;
   return (
@@ -262,7 +256,6 @@ function AlertsBanner({ alerts }) {
   );
 }
 
-/* ====================== EVENT HISTORY ==================================== */
 const EVENT_ICONS = {
   rule_breach: { icon: Icon.Alert,    color: 'text-clay'    },
   auto_on:     { icon: Icon.Power,    color: 'text-moss-700' },
@@ -302,7 +295,6 @@ function EventHistory({ events }) {
   );
 }
 
-/* ====================== DEVICE INFO (real TB mode) ======================= */
 function DeviceInfo({ device, house, rule }) {
   return (
     <Card className="p-5">
@@ -346,7 +338,6 @@ function DeviceInfo({ device, house, rule }) {
   );
 }
 
-/* ====================== MAIN USER VIEW =================================== */
 export default function UserDashboard({
   houses, opgs, devices, rules, selectedHouseId, setSelectedHouseId,
   latest, history, mockSnapshot, events, onActuatorToggle, onAutoToggle, onSaveHouseDetails,
@@ -381,7 +372,6 @@ export default function UserDashboard({
 
   return (
     <div className="space-y-5 animate-fade-in">
-      {/* Greenhouse selector */}
       <div className="rounded-2xl border border-ink-150 bg-white shadow-soft overflow-hidden">
         <button
           onClick={() => setSelectorOpen(o => !o)}
@@ -415,7 +405,6 @@ export default function UserDashboard({
         </div>
       </div>
 
-      {/* Greenhouse header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 pt-2">
         <div>
           <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-moss-700/80 font-medium mb-1">
@@ -445,9 +434,7 @@ export default function UserDashboard({
 
       {alerts.length > 0 && <AlertsBanner alerts={alerts} />}
 
-      {/* Main grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Left: sensors + chart */}
         <div className="lg:col-span-8 space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 stagger">
             {SENSOR_DEFS.map(s => (
@@ -496,7 +483,6 @@ export default function UserDashboard({
           </Card>
         </div>
 
-        {/* Right rail */}
         <div className="lg:col-span-4 space-y-5">
           {USE_MOCK_DATA ? (
             <ActuatorPanel
@@ -510,7 +496,6 @@ export default function UserDashboard({
         </div>
       </div>
 
-      {/* Edit modal */}
       <HouseEditModal
         open={editOpen}
         house={house}

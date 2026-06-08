@@ -16,7 +16,6 @@ const ADMIN_TABS = [
   { id: 'platform', label: 'Platforma',  icon: Icon.Server,   sub: 'ThingsBoard veza' },
 ];
 
-/* ============== HOUSES TAB =============================================== */
 function HousesTab({ houses, setHouses, opgs, devices, setDevices, onSaveHouse, onDeleteHouse }) {
   const [editing, setEditing] = useState(null);
   const [confirmDel, setConfirmDel] = useState(null);
@@ -181,7 +180,6 @@ function HousesTab({ houses, setHouses, opgs, devices, setDevices, onSaveHouse, 
   );
 }
 
-/* ============== DEVICES TAB ============================================== */
 function DevicesTab({ devices, setDevices, houses, onSaveDevice, onDeleteDevice }) {
   const [addOpen, setAddOpen] = useState(false);
   const [draft, setDraft] = useState({ name: '', houseId: houses[0]?.id, type: 'virtualni' });
@@ -301,7 +299,6 @@ function DevicesTab({ devices, setDevices, houses, onSaveDevice, onDeleteDevice 
   );
 }
 
-/* ============== RULES TAB ================================================ */
 function RulesTab({ houses, rules, setRules, onSaveRules }) {
   const [selected, setSelected] = useState(houses[0]?.id);
   const [saving, setSaving]     = useState(false);
@@ -345,7 +342,6 @@ function RulesTab({ houses, rules, setRules, onSaveRules }) {
 
         <Card className="lg:col-span-9 p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {/* Temperature – only max threshold */}
             <div className="rounded-xl border border-ink-100 p-4">
               <div className="flex items-center gap-2.5 mb-3">
                 <div className="w-9 h-9 rounded-lg flex items-center justify-center"
@@ -365,7 +361,6 @@ function RulesTab({ houses, rules, setRules, onSaveRules }) {
               </div>
             </div>
 
-            {/* Humidity – min + max */}
             <div className="rounded-xl border border-ink-100 p-4">
               <div className="flex items-center gap-2.5 mb-3">
                 <div className="w-9 h-9 rounded-lg flex items-center justify-center"
@@ -408,7 +403,6 @@ function RulesTab({ houses, rules, setRules, onSaveRules }) {
   );
 }
 
-/* ============== PLATFORM TAB ============================================= */
 function PlatformTab() {
   const cfg = TB_CONFIG;
   const isMock = USE_MOCK_DATA;
@@ -510,7 +504,6 @@ function MqttCard({ title, topic, payload, dir = '→ ' }) {
   );
 }
 
-/* ============== ADMIN PANEL (root) ======================================= */
 export default function AdminPanel(props) {
   const [tab, setTab] = useState('houses');
   return (
@@ -535,7 +528,6 @@ export default function AdminPanel(props) {
             </div>
           </div>
         </div>
-        {/* subtle mesh overlay */}
         <div className="absolute inset-0 pointer-events-none" style={{
           backgroundImage: 'radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 60%), radial-gradient(circle at 10% 80%, rgba(0,0,0,0.08) 0%, transparent 50%)'
         }} />

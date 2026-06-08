@@ -55,7 +55,6 @@ export default function GreenhouseMap({ lat, lng, name }) {
 
   return (
     <>
-      {/* Small map */}
       <div className="relative group">
         <LeafletMap lat={lat} lng={lng} name={name} className="h-[180px] rounded-xl overflow-hidden border border-ink-100" />
         <button
@@ -67,7 +66,6 @@ export default function GreenhouseMap({ lat, lng, name }) {
         </button>
       </div>
 
-      {/* Expanded modal */}
       {expanded && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink-900/60 backdrop-blur-sm"

@@ -130,7 +130,6 @@ export const Drawer = ({ open, onClose, title, sub, children, footer }) => {
     <div className="fixed inset-0 z-[9999]">
       <div className="absolute inset-0 bg-black/15 backdrop-blur-sm" onClick={onClose}></div>
       <div className="fixed right-0 top-16 bottom-0 w-full max-w-md bg-white shadow-xl flex flex-col animate-slide-in-right z-[10000]">
-        {/* Header accent bar */}
         <div className="h-1 bg-gradient-to-r from-moss-600 to-moss-500"></div>
 
         <div className="flex items-start justify-between px-5 py-3 border-b border-ink-100">

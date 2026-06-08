@@ -39,7 +39,6 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-sm">
-        {/* Brand */}
         <div className="flex items-center gap-2.5 mb-8 justify-center">
           <div className="w-10 h-10 rounded-xl bg-ink-900 text-paper flex items-center justify-center relative overflow-hidden">
             <Icon.Leaf className="w-5 h-5 text-moss-300 relative z-10" />

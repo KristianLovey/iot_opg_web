@@ -36,7 +36,6 @@ export default function AppMain() {
   const [userEmail, setUserEmail]       = useState('');
   const prevBreachRef = useRef({});
 
-  // ── Real TB: initial data load ──────────────────────────────────────────
   useEffect(() => {
     if (USE_MOCK_DATA) return;
     setTbLoading(true);
@@ -56,7 +55,6 @@ export default function AppMain() {
       .finally(() => setTbLoading(false));
   }, []);
 
-  // ── Real TB: load 24h history once houses are known ────────────────────
   useEffect(() => {
     if (USE_MOCK_DATA || houses.length === 0) return;
     const go = async () => {
@@ -67,7 +65,6 @@ export default function AppMain() {
           const hist = await getTelemetryHistory(h.deviceId);
           const tsMap = {};
           TELEM_KEYS.forEach(k => {
-            // normalise illuminance/light → lux
             const rows = hist[k] || (k === 'lux' ? (hist.illuminance || hist.light || []) : []);
             rows.forEach(({ ts, value }) => {
               tsMap[ts] = tsMap[ts] || { ts };
@@ -82,7 +79,6 @@ export default function AppMain() {
     go();
   }, [houses]);
 
-  // ── Unified polling loop ────────────────────────────────────────────────
   useEffect(() => {
     let cancelled = false;
     let handle;
@@ -182,10 +178,8 @@ export default function AppMain() {
       USE_MOCK_DATA ? tickMock() : tickReal();
     }
     return () => { cancelled = true; clearTimeout(handle); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [houses, rules]);
 
-  // ── Actuator toggle (mock + real RPC) ──────────────────────────────────
   const handleActuatorToggle = useCallback(async (key, on) => {
     const house = houses.find(h => h.id === selectedHouseId);
     if (!house) return;
@@ -208,7 +202,6 @@ export default function AppMain() {
     setMockSnapshot(s => ({ ...s, [house.id]: { ...s[house.id], autoMode: { ...s[house.id]?.autoMode, [key]: on } } }));
   }, [houses, selectedHouseId]);
 
-  // ── Save greenhouse attributes + thresholds ────────────────────────────
   const handleSaveHouseDetails = useCallback(async (houseId, attrs, thresholds) => {
     if (USE_MOCK_DATA) {
       setHouses(hs => hs.map(h => h.id === houseId ? { ...h, ...attrs } : h));
@@ -223,7 +216,6 @@ export default function AppMain() {
     setRules(r => ({ ...r, [houseId]: { ...r[houseId], ...thresholds } }));
   }, [houses]);
 
-  // ── Admin: create / delete greenhouse + device (live TB) ──────────────
   const handleSaveHouse = useCallback(async (h) => {
     const customerId = opgs[0]?.id !== 'admin' ? opgs[0]?.id : null;
     if (h.id) {
@@ -262,7 +254,6 @@ export default function AppMain() {
     setDevices(ds => ds.filter(d => d.id !== deviceId));
   }, []);
 
-  // ── Logout ─────────────────────────────────────────────────────────────
   const handleLogout = useCallback(async () => {
     await logout();
     router.push('/login');
@@ -297,10 +288,8 @@ export default function AppMain() {
 
   return (
     <div className="min-h-screen">
-      {/* TOP NAV */}
       <header className="sticky top-0 z-[10001] bg-paper/90 backdrop-blur-md border-b border-ink-100/80 shadow-[0_1px_0_rgba(22,32,26,0.04)]">
         <div className="max-w-[1440px] mx-auto px-4 md:px-6 h-[64px] flex items-center gap-4">
-          {/* Logo */}
           <div className="flex items-center gap-2.5 flex-shrink-0">
             <div className="w-9 h-9 rounded-xl bg-green-grad text-paper flex items-center justify-center relative overflow-hidden shadow-sm">
               <Icon.Leaf className="w-[18px] h-[18px] text-white relative z-10" />
@@ -313,7 +302,6 @@ export default function AppMain() {
             </div>
           </div>
 
-          {/* Nav tabs */}
           <div className="ml-4 md:ml-8 flex p-1 bg-ink-100/80 rounded-xl border border-ink-150/60">
             <ViewTab active={view === 'user'} onClick={() => setView('user')}>
               <Icon.Dashboard className="w-4 h-4" /> Korisnik
@@ -327,7 +315,6 @@ export default function AppMain() {
 
           <div className="flex-1" />
 
-          {/* Status badges */}
           <div className="hidden md:flex items-center gap-2">
             <Badge status={USE_MOCK_DATA ? 'warn' : 'on'}>
               {USE_MOCK_DATA ? 'Demo mod' : 'ThingsBoard'}
@@ -339,7 +326,6 @@ export default function AppMain() {
             )}
           </div>
 
-          {/* Profile dropdown */}
           <ProfileMenu
             email={userEmail || opg?.owner || ''}
             opgName={opg?.name || 'OPG'}
@@ -349,7 +335,6 @@ export default function AppMain() {
         </div>
       </header>
 
-      {/* MAIN */}
       <main className="max-w-[1440px] mx-auto px-4 md:px-6 py-6 md:py-8">
         {allLatest.length === 0 && houses.length > 0 ? (
           <BootSkeleton />
@@ -459,7 +444,6 @@ function ProfileMenu({ email, opgName, isAdmin, onLogout }) {
 
       {open && (
         <div className="absolute right-0 top-full mt-2 w-[220px] bg-white rounded-2xl border border-ink-150 shadow-[0_8px_32px_rgba(22,32,26,0.12)] overflow-hidden animate-slide-down z-50">
-          {/* User info header */}
           <div className="bg-green-grad-soft border-b border-moss-200/60 px-4 py-3">
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-xl bg-green-grad text-white flex items-center justify-center text-[13px] font-bold shadow-sm">
@@ -472,7 +456,6 @@ function ProfileMenu({ email, opgName, isAdmin, onLogout }) {
             </div>
           </div>
 
-          {/* Menu items */}
           <div className="p-1.5">
             <div className="px-3 py-2 flex items-center gap-2 text-[12px] text-ink-500">
               <Icon.Shield className="w-3.5 h-3.5 text-moss-600" />
