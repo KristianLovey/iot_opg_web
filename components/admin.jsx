@@ -57,7 +57,7 @@ function HousesTab({ houses, setHouses, opgs, devices, setDevices, onSaveHouse, 
       <SectionTitle
         kicker="Skalabilnost"
         title="Plastenici i OPG-ovi"
-        sub="Dodaj nove lokacije bilo kojem OPG-u – sustav je već pripremljen za komercijalizaciju."
+        sub="Dodaj nove lokacije bilo kojem OPG-u."
         right={
           <Button variant="primary" onClick={() => setEditing({ new: true, name: '', location: '', opgId: opgs[0].id, area: 200 })}>
             <Icon.Plus className="w-4 h-4" /> Dodaj plastenik

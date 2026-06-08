@@ -107,8 +107,8 @@ export const Modal = ({ open, onClose, title, sub, children, footer, size = 'md'
   return (
     <div className="fixed inset-0 z-[10002] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/85 backdrop-blur-md" onClick={onClose}></div>
-      <div className={`relative w-full ${w} bg-white rounded-2xl shadow-[0_25px_50px_rgba(0,0,0,0.25)] border-2 border-ink-200 overflow-hidden z-[10003]`}>
-        <div className="flex items-start justify-between px-5 py-3 border-b border-ink-100">
+      <div className={`relative w-full ${w} max-h-[calc(100vh-2rem)] flex flex-col bg-white rounded-2xl shadow-[0_25px_50px_rgba(0,0,0,0.25)] border-2 border-ink-200 overflow-hidden z-[10003]`}>
+        <div className="flex items-start justify-between px-5 py-3 border-b border-ink-100 flex-shrink-0">
           <div>
             <h3 className="display text-lg text-ink-900 leading-tight">{title}</h3>
             {sub && <p className="text-[12px] text-ink-500 mt-0.5">{sub}</p>}
@@ -117,8 +117,8 @@ export const Modal = ({ open, onClose, title, sub, children, footer, size = 'md'
             <Icon.X className="w-5 h-5" />
           </button>
         </div>
-        <div className="px-5 py-4 max-h-[55vh] overflow-y-auto">{children}</div>
-        {footer && <div className="px-5 py-3 border-t border-ink-100 bg-paper-soft flex justify-end gap-2">{footer}</div>}
+        <div className="px-5 py-4 overflow-y-auto flex-1 min-h-0">{children}</div>
+        {footer && <div className="px-5 py-3 border-t border-ink-100 bg-paper-soft flex justify-end gap-2 flex-shrink-0">{footer}</div>}
       </div>
     </div>
   );
