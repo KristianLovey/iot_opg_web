@@ -133,20 +133,20 @@ export const Drawer = ({ open, onClose, title, sub, children, footer }) => {
         {/* Header accent bar */}
         <div className="h-1 bg-gradient-to-r from-moss-600 to-moss-500"></div>
 
-        <div className="flex items-start justify-between px-7 py-5">
+        <div className="flex items-start justify-between px-5 py-3 border-b border-ink-100">
           <div className="flex-1">
-            <h2 className="text-xl font-bold text-ink-900 leading-snug">{title}</h2>
-            {sub && <p className="text-[13px] text-ink-500 mt-2">{sub}</p>}
+            <h2 className="text-lg font-bold text-ink-900 leading-snug">{title}</h2>
+            {sub && <p className="text-[12px] text-ink-500 mt-1">{sub}</p>}
           </div>
-          <button onClick={onClose} className="text-ink-300 hover:text-ink-600 hover:bg-ink-100 p-2 -m-2 rounded-lg flex-shrink-0 transition-colors">
+          <button onClick={onClose} className="text-ink-300 hover:text-ink-600 hover:bg-ink-100 p-1.5 -m-1.5 rounded-lg flex-shrink-0 transition-colors">
             <Icon.X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-7 py-6 space-y-1">{children}</div>
+        <div className="flex-1 overflow-y-auto px-5 py-4">{children}</div>
 
         {footer && (
-          <div className="px-7 py-5 border-t border-ink-100 bg-gradient-to-b from-transparent to-ink-50 flex justify-end gap-3">
+          <div className="px-5 py-3 border-t border-ink-100 bg-gradient-to-b from-transparent to-ink-50 flex justify-end gap-3">
             {footer}
           </div>
         )}

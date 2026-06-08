@@ -135,7 +135,7 @@ function HousesTab({ houses, setHouses, opgs, devices, setDevices, onSaveHouse, 
         }
       >
         {editing && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <Field label="Naziv plastenika">
               <Input value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} placeholder="npr. Plastenik E – Jagode" />
             </Field>
@@ -284,7 +284,7 @@ function DevicesTab({ devices, setDevices, houses, onSaveDevice, onDeleteDevice 
           </>
         }
       >
-        <div className="space-y-6">
+        <div className="space-y-4">
           <Field label="Naziv uređaja">
             <Input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} placeholder="npr. Virt. senzor F" />
           </Field>
