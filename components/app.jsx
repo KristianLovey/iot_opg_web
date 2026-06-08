@@ -298,7 +298,7 @@ export default function AppMain() {
   return (
     <div className="min-h-screen">
       {/* TOP NAV */}
-      <header className="sticky top-0 z-30 bg-paper/90 backdrop-blur-md border-b border-ink-100/80 shadow-[0_1px_0_rgba(22,32,26,0.04)]">
+      <header className="sticky top-0 z-[10001] bg-paper/90 backdrop-blur-md border-b border-ink-100/80 shadow-[0_1px_0_rgba(22,32,26,0.04)]">
         <div className="max-w-[1440px] mx-auto px-4 md:px-6 h-[64px] flex items-center gap-4">
           {/* Logo */}
           <div className="flex items-center gap-2.5 flex-shrink-0">
