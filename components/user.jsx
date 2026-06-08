@@ -190,7 +190,7 @@ function HouseEditModal({ open, house, rule, onClose, onSave }) {
       open={open} onClose={onClose}
       title="Postavke plastenika"
       sub={house.name}
-      size="sm"
+      size="md"
       footer={
         <>
           <Button variant="outline" onClick={onClose}>Odustani</Button>

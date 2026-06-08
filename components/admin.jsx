@@ -125,7 +125,7 @@ function HousesTab({ houses, setHouses, opgs, devices, setDevices, onSaveHouse, 
         onClose={() => setEditing(null)}
         title={editing?.new ? 'Novi plastenik' : 'Uredi plastenik'}
         sub="Plastenici predstavljaju lokacije pod jednim OPG-om."
-        size="sm"
+        size="md"
         footer={
           <>
             <Button variant="outline" onClick={() => setEditing(null)}>Odustani</Button>
@@ -276,7 +276,7 @@ function DevicesTab({ devices, setDevices, houses, onSaveDevice, onDeleteDevice 
         onClose={() => setAddOpen(false)}
         title="Novi virtualni uređaj"
         sub="Virtualni senzor generira realistične podatke za prikaz skalabilnosti."
-        size="sm"
+        size="md"
         footer={
           <>
             <Button variant="outline" onClick={() => setAddOpen(false)}>Odustani</Button>
