@@ -75,14 +75,14 @@ export const Button = ({ children, variant = 'primary', size = 'md', className =
 };
 
 export const Field = ({ label, hint, children, className = '' }) => (
-  <label className={`flex flex-col gap-2.5 ${className}`}>
+  <label className={`flex flex-col gap-1.5 ${className}`}>
     {label && <span className="text-[13px] font-semibold text-ink-800">{label}</span>}
     {children}
     {hint && <span className="text-[12px] text-ink-500">{hint}</span>}
   </label>
 );
 
-const inputCls = 'w-full px-4 py-2.5 text-[13px] bg-white border border-ink-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-moss-500/50 focus:border-moss-500 placeholder:text-ink-400 transition-colors';
+const inputCls = 'w-full px-4 py-2 text-[13px] bg-white border border-ink-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-moss-500/50 focus:border-moss-500 placeholder:text-ink-400 transition-colors';
 export const Input = (props) => <input {...props} className={`${inputCls} ${props.className || ''}`} />;
 
 export const NumberInput = ({ unit, ...props }) => (

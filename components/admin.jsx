@@ -136,7 +136,7 @@ function HousesTab({ houses, setHouses, opgs, devices, setDevices, onSaveHouse, 
         }
       >
         {editing && (
-          <div className="space-y-4">
+          <div className="space-y-3">
             <Field label="Naziv plastenika">
               <Input value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} placeholder="npr. Plastenik E – Jagode" />
             </Field>
