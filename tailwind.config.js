@@ -50,6 +50,15 @@ module.exports = {
         soft: '0 1px 2px rgba(22,32,26,0.04), 0 4px 12px rgba(22,32,26,0.04)',
         card: '0 1px 0 rgba(22,32,26,0.04), 0 2px 6px rgba(22,32,26,0.06)',
       },
+      keyframes: {
+        'slide-in-right': {
+          from: { transform: 'translateX(100%)' },
+          to: { transform: 'translateX(0)' },
+        },
+      },
+      animation: {
+        'slide-in-right': 'slide-in-right 0.3s ease-out',
+      },
     },
   },
   plugins: [],

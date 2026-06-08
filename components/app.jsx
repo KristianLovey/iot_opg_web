@@ -13,6 +13,7 @@ import {
 import {
   loadGreenhouseData, getLatestTelemetry, getTelemetryHistory,
   saveAssetAttributes, saveDeviceThresholds, logout,
+  createAsset, deleteAsset, createDevice, deleteDevice, linkDeviceToAsset,
 } from '@/lib/tb-api';
 
 const TELEM_KEYS = ['temperature', 'humidity', 'lux'];
@@ -154,12 +155,15 @@ export default function AppMain() {
     const tickReal = async () => {
       if (cancelled) return;
       const nextLatest = {};
+      const lastSeenMap = {};
       for (const h of houses) {
         if (!h.deviceId) continue;
         try {
           const lat = await getLatestTelemetry(h.deviceId);
           const luxRaw = lat.lux?.[0]?.value ?? lat.illuminance?.[0]?.value ?? lat.light?.[0]?.value;
           nextLatest[h.id] = { temperature: parseFloat(lat.temperature?.[0]?.value), humidity: parseFloat(lat.humidity?.[0]?.value), lux: parseFloat(luxRaw) };
+          const ts = lat.temperature?.[0]?.ts || lat.humidity?.[0]?.ts;
+          if (ts) lastSeenMap[h.deviceId] = ts;
         } catch (e) {
           if (e.message.includes('401')) { router.push('/login'); return; }
           console.warn('TB poll failed', h.id, e);
@@ -167,6 +171,9 @@ export default function AppMain() {
       }
       if (cancelled) return;
       setLatest(nextLatest);
+      if (Object.keys(lastSeenMap).length > 0) {
+        setDevices(ds => ds.map(d => lastSeenMap[d.id] ? { ...d, lastSeen: lastSeenMap[d.id] } : d));
+      }
       detectBreaches(nextLatest, {});
       handle = setTimeout(tickReal, 5000);
     };
@@ -215,6 +222,45 @@ export default function AppMain() {
     setHouses(hs => hs.map(h => h.id === houseId ? { ...h, ...attrs } : h));
     setRules(r => ({ ...r, [houseId]: { ...r[houseId], ...thresholds } }));
   }, [houses]);
+
+  // ── Admin: create / delete greenhouse + device (live TB) ──────────────
+  const handleSaveHouse = useCallback(async (h) => {
+    const customerId = opgs[0]?.id !== 'admin' ? opgs[0]?.id : null;
+    if (h.id) {
+      await saveAssetAttributes(h.id, { Lokacija: h.location || '', 'Površina': h.area || 0 });
+      setHouses(hs => hs.map(x => x.id === h.id ? { ...x, name: h.name, location: h.location, area: h.area } : x));
+    } else {
+      const asset = await createAsset(h.name, customerId);
+      const assetId = asset.id.id;
+      await saveAssetAttributes(assetId, { Lokacija: h.location || '', 'Površina': h.area || 0 });
+      const dev = await createDevice(`VIRTUAL_${h.name.replace(/\s+/g, '_').slice(0, 20)}`, customerId);
+      const deviceId = dev.id.id;
+      await linkDeviceToAsset(assetId, deviceId);
+      setHouses(hs => [...hs, { id: assetId, name: h.name, location: h.location, kultura: '', area: h.area, opgId: h.opgId, type: 'virtualni', deviceId, lat: null, lng: null }]);
+      setDevices(ds => [...ds, { id: deviceId, name: dev.name, type: 'virtualni', houseId: assetId, online: false, lastSeen: Date.now(), firmware: '1.4.x' }]);
+    }
+  }, [opgs]);
+
+  const handleDeleteHouse = useCallback(async (houseId) => {
+    const house = houses.find(h => h.id === houseId);
+    if (house?.deviceId) await deleteDevice(house.deviceId).catch(console.warn);
+    await deleteAsset(houseId);
+    setHouses(hs => hs.filter(h => h.id !== houseId));
+    setDevices(ds => ds.filter(d => d.houseId !== houseId));
+  }, [houses]);
+
+  const handleSaveDevice = useCallback(async (draft) => {
+    const customerId = opgs[0]?.id !== 'admin' ? opgs[0]?.id : null;
+    const dev = await createDevice(draft.name, customerId);
+    const deviceId = dev.id.id;
+    if (draft.houseId) await linkDeviceToAsset(draft.houseId, deviceId);
+    setDevices(ds => [...ds, { id: deviceId, name: dev.name, type: 'virtualni', houseId: draft.houseId, online: false, lastSeen: Date.now(), firmware: '1.4.x' }]);
+  }, [opgs]);
+
+  const handleDeleteDevice = useCallback(async (deviceId) => {
+    await deleteDevice(deviceId);
+    setDevices(ds => ds.filter(d => d.id !== deviceId));
+  }, []);
 
   // ── Logout ─────────────────────────────────────────────────────────────
   const handleLogout = useCallback(async () => {
@@ -340,6 +386,10 @@ export default function AppMain() {
               if (house?.deviceId) await saveDeviceThresholds(house.deviceId, r);
               setRules(prev => ({ ...prev, [houseId]: r }));
             } : null}
+            onSaveHouse={!USE_MOCK_DATA ? handleSaveHouse : null}
+            onDeleteHouse={!USE_MOCK_DATA ? handleDeleteHouse : null}
+            onSaveDevice={!USE_MOCK_DATA ? handleSaveDevice : null}
+            onDeleteDevice={!USE_MOCK_DATA ? handleDeleteDevice : null}
           />
         )}
       </main>

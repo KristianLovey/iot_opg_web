@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Icon } from './icons';
 import {
-  Card, SectionTitle, Badge, Button, Field, Input, NumberInput, Select, Modal,
+  Card, SectionTitle, Badge, Button, Field, Input, NumberInput, Select, Modal, Drawer,
   fmtAgo,
 } from './shared';
 import { SENSOR_DEFS } from '@/lib/sensor-defs';
@@ -17,28 +17,38 @@ const ADMIN_TABS = [
 ];
 
 /* ============== HOUSES TAB =============================================== */
-function HousesTab({ houses, setHouses, opgs, devices, setDevices }) {
+function HousesTab({ houses, setHouses, opgs, devices, setDevices, onSaveHouse, onDeleteHouse }) {
   const [editing, setEditing] = useState(null);
   const [confirmDel, setConfirmDel] = useState(null);
+  const [saving, setSaving] = useState(false);
 
-  const save = (h) => {
-    if (h.id) {
-      setHouses(houses.map(x => x.id === h.id ? h : x));
+  const save = async (h) => {
+    if (onSaveHouse) {
+      setSaving(true);
+      try { await onSaveHouse(h); } catch (e) { console.error('Save house failed', e); } finally { setSaving(false); }
     } else {
-      const id = `gh-${Date.now()}`;
-      const deviceId = `sim-${Math.floor(Math.random() * 9000 + 1000)}`;
-      setHouses([...houses, { ...h, id, deviceId, type: 'virtualni' }]);
-      setDevices([...devices, {
-        id: deviceId, name: `Virt. senzor ${h.name.slice(0, 8)}`, type: 'virtualni',
-        houseId: id, online: true, lastSeen: Date.now(), firmware: 'sim-1.0',
-      }]);
+      if (h.id) {
+        setHouses(houses.map(x => x.id === h.id ? h : x));
+      } else {
+        const id = `gh-${Date.now()}`;
+        const deviceId = `sim-${Math.floor(Math.random() * 9000 + 1000)}`;
+        setHouses([...houses, { ...h, id, deviceId, type: 'virtualni' }]);
+        setDevices([...devices, {
+          id: deviceId, name: `Virt. senzor ${h.name.slice(0, 8)}`, type: 'virtualni',
+          houseId: id, online: true, lastSeen: Date.now(), firmware: 'sim-1.0',
+        }]);
+      }
     }
     setEditing(null);
   };
 
-  const remove = (id) => {
-    setHouses(houses.filter(h => h.id !== id));
-    setDevices(devices.filter(d => d.houseId !== id));
+  const remove = async (id) => {
+    if (onDeleteHouse) {
+      await onDeleteHouse(id).catch(console.error);
+    } else {
+      setHouses(houses.filter(h => h.id !== id));
+      setDevices(devices.filter(d => d.houseId !== id));
+    }
     setConfirmDel(null);
   };
 
@@ -110,7 +120,7 @@ function HousesTab({ houses, setHouses, opgs, devices, setDevices }) {
         </table>
       </Card>
 
-      <Modal
+      <Drawer
         open={!!editing}
         onClose={() => setEditing(null)}
         title={editing?.new ? 'Novi plastenik' : 'Uredi plastenik'}
@@ -118,15 +128,15 @@ function HousesTab({ houses, setHouses, opgs, devices, setDevices }) {
         footer={
           <>
             <Button variant="outline" onClick={() => setEditing(null)}>Odustani</Button>
-            <Button variant="primary" onClick={() => save(editing)}>
-              <Icon.Check className="w-4 h-4" /> {editing?.new ? 'Dodaj' : 'Spremi'}
+            <Button variant="primary" onClick={() => save(editing)} disabled={saving}>
+              <Icon.Check className="w-4 h-4" /> {saving ? 'Sprema…' : (editing?.new ? 'Dodaj' : 'Spremi')}
             </Button>
           </>
         }
       >
         {editing && (
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Naziv plastenika" className="col-span-2">
+          <div className="space-y-6">
+            <Field label="Naziv plastenika">
               <Input value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} placeholder="npr. Plastenik E – Jagode" />
             </Field>
             <Field label="OPG">
@@ -137,17 +147,17 @@ function HousesTab({ houses, setHouses, opgs, devices, setDevices }) {
             <Field label="Površina">
               <NumberInput unit="m²" value={editing.area} onChange={(e) => setEditing({ ...editing, area: +e.target.value })} />
             </Field>
-            <Field label="Lokacija" className="col-span-2">
+            <Field label="Lokacija">
               <Input value={editing.location} onChange={(e) => setEditing({ ...editing, location: e.target.value })} placeholder="Grad, županija" />
             </Field>
             {!editing.new && (
-              <Field label="ID uređaja" className="col-span-2">
+              <Field label="ID uređaja">
                 <Input value={editing.deviceId} readOnly className="num bg-ink-100/50 cursor-not-allowed" />
               </Field>
             )}
           </div>
         )}
-      </Modal>
+      </Drawer>
 
       <Modal
         open={!!confirmDel}
@@ -171,13 +181,19 @@ function HousesTab({ houses, setHouses, opgs, devices, setDevices }) {
 }
 
 /* ============== DEVICES TAB ============================================== */
-function DevicesTab({ devices, setDevices, houses }) {
+function DevicesTab({ devices, setDevices, houses, onSaveDevice, onDeleteDevice }) {
   const [addOpen, setAddOpen] = useState(false);
   const [draft, setDraft] = useState({ name: '', houseId: houses[0]?.id, type: 'virtualni' });
+  const [saving, setSaving] = useState(false);
 
-  const add = () => {
-    const id = `sim-${Math.floor(Math.random() * 9000 + 1000)}`;
-    setDevices([...devices, { ...draft, id, online: true, lastSeen: Date.now(), firmware: 'sim-1.0' }]);
+  const add = async () => {
+    if (onSaveDevice) {
+      setSaving(true);
+      try { await onSaveDevice(draft); } catch (e) { console.error('Create device failed', e); } finally { setSaving(false); }
+    } else {
+      const id = `sim-${Math.floor(Math.random() * 9000 + 1000)}`;
+      setDevices([...devices, { ...draft, id, online: true, lastSeen: Date.now(), firmware: 'sim-1.0' }]);
+    }
     setAddOpen(false);
     setDraft({ name: '', houseId: houses[0]?.id, type: 'virtualni' });
   };
@@ -241,7 +257,10 @@ function DevicesTab({ devices, setDevices, houses }) {
                 {d.type === 'virtualni' && (
                   <Button
                     variant="ghost" size="sm" className="text-clay hover:bg-clay/10"
-                    onClick={() => setDevices(devices.filter(x => x.id !== d.id))}
+                    onClick={async () => {
+                      if (onDeleteDevice) await onDeleteDevice(d.id).catch(console.error);
+                      else setDevices(devices.filter(x => x.id !== d.id));
+                    }}
                   >
                     <Icon.Trash className="w-3.5 h-3.5" /> Ukloni
                   </Button>
@@ -251,22 +270,21 @@ function DevicesTab({ devices, setDevices, houses }) {
           );
         })}
       </div>
-      <Modal
+      <Drawer
         open={addOpen}
         onClose={() => setAddOpen(false)}
         title="Novi virtualni uređaj"
         sub="Virtualni senzor generira realistične podatke za prikaz skalabilnosti."
-        size="sm"
         footer={
           <>
             <Button variant="outline" onClick={() => setAddOpen(false)}>Odustani</Button>
-            <Button variant="primary" onClick={add} disabled={!draft.name || !draft.houseId}>
-              <Icon.Plus className="w-4 h-4" /> Dodaj
+            <Button variant="primary" onClick={add} disabled={!draft.name || !draft.houseId || saving}>
+              <Icon.Plus className="w-4 h-4" /> {saving ? 'Stvara…' : 'Dodaj'}
             </Button>
           </>
         }
       >
-        <div className="space-y-4">
+        <div className="space-y-6">
           <Field label="Naziv uređaja">
             <Input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} placeholder="npr. Virt. senzor F" />
           </Field>
@@ -276,7 +294,7 @@ function DevicesTab({ devices, setDevices, houses }) {
             </Select>
           </Field>
         </div>
-      </Modal>
+      </Drawer>
     </>
   );
 }
