@@ -108,17 +108,17 @@ export const Modal = ({ open, onClose, title, sub, children, footer, size = 'md'
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/85 backdrop-blur-md" onClick={onClose}></div>
       <div className={`relative w-full ${w} bg-white rounded-2xl shadow-[0_25px_50px_rgba(0,0,0,0.25)] border-2 border-ink-200 overflow-hidden z-[10000]`}>
-        <div className="flex items-start justify-between px-6 py-5 border-b border-ink-100">
+        <div className="flex items-start justify-between px-5 py-3 border-b border-ink-100">
           <div>
-            <h3 className="display text-xl text-ink-900 leading-tight">{title}</h3>
-            {sub && <p className="text-[13px] text-ink-500 mt-0.5">{sub}</p>}
+            <h3 className="display text-lg text-ink-900 leading-tight">{title}</h3>
+            {sub && <p className="text-[12px] text-ink-500 mt-0.5">{sub}</p>}
           </div>
           <button onClick={onClose} className="text-ink-400 hover:text-ink-700 p-1 -m-1">
             <Icon.X className="w-5 h-5" />
           </button>
         </div>
-        <div className="px-6 py-5 max-h-[70vh] overflow-y-auto">{children}</div>
-        {footer && <div className="px-6 py-4 border-t border-ink-100 bg-paper-soft flex justify-end gap-2">{footer}</div>}
+        <div className="px-5 py-4 max-h-[55vh] overflow-y-auto">{children}</div>
+        {footer && <div className="px-5 py-3 border-t border-ink-100 bg-paper-soft flex justify-end gap-2">{footer}</div>}
       </div>
     </div>
   );

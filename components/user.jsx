@@ -198,10 +198,10 @@ function HouseEditModal({ open, house, rule, onClose, onSave }) {
         </>
       }
     >
-      <div className="space-y-5">
+      <div className="space-y-4">
         <div>
-          <div className="text-[11px] font-medium tracking-[0.14em] uppercase text-ink-400 mb-3">Podaci plastenika</div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="text-[10px] font-medium tracking-[0.14em] uppercase text-ink-400 mb-2">Podaci plastenika</div>
+          <div className="grid grid-cols-2 gap-3">
             <Field label="Kultura" className="col-span-2">
               <Input value={form.kultura} onChange={e => set('kultura', e.target.value)} placeholder="npr. Rajčice" />
             </Field>
@@ -213,9 +213,9 @@ function HouseEditModal({ open, house, rule, onClose, onSave }) {
             </Field>
           </div>
         </div>
-        <div className="pt-4 border-t border-ink-100">
-          <div className="text-[11px] font-medium tracking-[0.14em] uppercase text-ink-400 mb-3">Alarm pragovi</div>
-          <div className="grid grid-cols-2 gap-4">
+        <div className="pt-3 border-t border-ink-100">
+          <div className="text-[10px] font-medium tracking-[0.14em] uppercase text-ink-400 mb-2">Alarm pragovi</div>
+          <div className="grid grid-cols-2 gap-3">
             <Field label="Max temperatura (°C)" className="col-span-2">
               <NumberInput unit="°C" value={form.tempMax} step={0.5} onChange={e => set('tempMax', e.target.value)} />
             </Field>
@@ -226,7 +226,7 @@ function HouseEditModal({ open, house, rule, onClose, onSave }) {
               <NumberInput unit="%" value={form.humMax} step={1} onChange={e => set('humMax', e.target.value)} />
             </Field>
           </div>
-          <p className="text-[12px] text-ink-400 mt-3">
+          <p className="text-[11px] text-ink-400 mt-2">
             Alarm temperature okida se kad temperatura premaši maksimum. Alarm vlage okida se kad je vlaga izvan postavljenog raspona.
           </p>
         </div>
