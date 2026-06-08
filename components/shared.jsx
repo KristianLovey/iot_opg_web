@@ -105,9 +105,9 @@ export const Modal = ({ open, onClose, title, sub, children, footer, size = 'md'
   if (!open) return null;
   const w = { sm: 'max-w-md', md: 'max-w-xl', lg: 'max-w-3xl' }[size];
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[10002] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/85 backdrop-blur-md" onClick={onClose}></div>
-      <div className={`relative w-full ${w} bg-white rounded-2xl shadow-[0_25px_50px_rgba(0,0,0,0.25)] border-2 border-ink-200 overflow-hidden z-[10000]`}>
+      <div className={`relative w-full ${w} bg-white rounded-2xl shadow-[0_25px_50px_rgba(0,0,0,0.25)] border-2 border-ink-200 overflow-hidden z-[10003]`}>
         <div className="flex items-start justify-between px-5 py-3 border-b border-ink-100">
           <div>
             <h3 className="display text-lg text-ink-900 leading-tight">{title}</h3>
